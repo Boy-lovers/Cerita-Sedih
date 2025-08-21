@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Magic Gateway</title>
+    <style>
+        * {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1e90ff;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: transform 1s ease;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #1e90ff;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0077cc;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .story {
+            position: absolute;
+            top: 100%;
+            width: 100%;
+            padding: 20px;
+            background-color: white;
+            transition: transform 1s ease;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .story-content {
+            padding: 20px;
+            text-align: justify;
+        }
+
+        .story-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e90ff;
+        }
+
+        .story-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h1>LOGIN</h1>
+        <div class="form-group">
+            <label for="username">UNSERNAME</label>
+            <input type="text" id="username" placeholder="ENTER YOUR UNSERNAME">
+        </div>
+        <div class="form-group">
+            <label for="password">PASSWORD</label>
+            <input type="password" id="password" placeholder="ENTER YOUR PASSWORD">
+        </div>
+        <button id="login-btn">CLICK UNTUK MEMULAI CERITA</button>
+        <div class="error" id="error-msg">Incorrect username or password</div>
+    </div>
+
+    <div class="story" id="story-container">
+        <h2 class="story-title">KETEMU IBU DI MIMPI (PENGARANG SYIFA)</h2>
+        
+        
+        
+        <div class="story-content">
+            <p>Malam itu aku tidur dengan hati yang resah. Banyak beban menumpuk di kepalaku, dan ada rasa rindu yang tidak pernah benar-benar hilang: rindu pada ibuku. Sejak beliau meninggal, rumah terasa sepi, bahkan doa yang kulantunkan setiap malam pun kadang tak cukup mengobati rinduku. Dalam keheningan tidurku, aku bermimpi berada di sebuah tempat yang asing namun begitu menenangkan, seperti taman dengan cahaya lembut yang menyinari setiap sudutnya.                                                                                           </p>
+
+            <p>Dari kejauhan, aku melihat sosok perempuan berdiri di antara bunga-bunga. Aku terpaku. Tubuhku bergetar, mataku panas menahan tangis. Itu ibuku. Senyumnya masih sama, lembut dan penuh ketulusan. Aku berlari menghampirinya, memanggil namanya dengan suara bergetar, “Bu…” Namun, kakiku terasa berat, seakan ada jarak tak kasat mata yang menghalangiku. Meski begitu, aku akhirnya sampai tepat di hadapannya.</p>
+
+            <p>Ketika aku melihat wajahnya dari dekat, semua kenangan lama menyerbu pikiranku. Wajah penuh keriput yang dulu kutemui kini tampak segar, matanya bercahaya, dan senyumannya seperti pelukan hangat. Aku menangis tersedu-sedu, mencoba meraih tangannya, tapi seolah-olah tanganku menembus udara kosong. Walaupun begitu, keberadaannya begitu nyata di hatiku.</p>
+
+            <p>Aku mulai bercerita tentang hidupku setelah kepergiannya. Aku katakan betapa beratnya menjalani hari-hari tanpa nasihat dan doa darinya. Aku ceritakan betapa sering aku merasa sendiri, betapa aku rindu saat-saat sederhana ketika ia hanya duduk di sampingku sambil menepuk pundakku. Ibuku hanya menatapku dengan senyum penuh kasih sayang, tatapan yang menenangkan dan tak pernah bisa kulupakan.</p>
+
+            <p>Kemudian, dengan suara lembut yang membuat hatiku luluh, ia berkata, “Nak, jangan terus larut dalam kesedihan. Aku tenang di sini, dan aku ingin melihatmu bahagia. Kamu harus kuat, kamu harus melanjutkan hidupmu dengan penuh semangat.” Kata-kata itu menampar hatiku. Aku tahu ibuku tidak ingin aku terjebak dalam rasa kehilangan, meski aku sendiri selalu ingin ia tetap di sisiku.</p>
+
+            <p>Aku bertanya lirih, “Bu, apakah ibu masih mendengar doa-doaku? Apakah ibu tahu betapa aku merindukanmu?” Ia tersenyum dan menjawab, “Setiap doa yang kau panjatkan sampai padaku, Nak. Aku mendengarnya, dan aku selalu mendoakanmu juga, dari tempatku sekarang.” Mendengar itu, air mataku semakin deras. Ada rasa lega sekaligus haru yang bercampur menjadi satu.</p>
+            <P>Namun, perlahan suasana taman itu mulai memudar. Angin bertiup lembut membawa keheningan, dan sosok ibuku mulai memudar bersama cahaya di sekitarnya. Aku panik, berusaha menggenggamnya agar tidak pergi. “Bu, jangan tinggalkan aku lagi!” teriakku. Tapi ibuku hanya melambaikan tangan sambil tersenyum, lalu berkata, “Aku tidak pernah benar-benar pergi, Nak. Aku selalu ada di hatimu.”</p>
+            <p>Aku terbangun dengan air mata yang masih mengalir. Semua terasa begitu nyata, seakan aku benar-benar baru saja bertemu dengannya. Meskipun sedih karena itu hanya mimpi, aku merasa mendapatkan kekuatan baru. Kata-kata ibuku masih terngiang jelas di kepalaku. Sejak hari itu, aku berjanji untuk terus melangkah, menjadi anak yang kuat, dan menjalani hidup dengan penuh keyakinan—karena aku tahu, kasih sayang ibuku tidak pernah hilang, ia tetap hidup di dalam hatiku selamanya.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-btn').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (username === 'Syifa' && password === '251') {
+                // Hide error if shown
+                errorMsg.style.display = 'none';
+
+                // Move login container up and out of view
+                document.getElementById('login-container').style.transform = 'translateY(-200%)';
+
+                // After a delay, show the story with upward animation
+                setTimeout(function() {
+                    document.body.style.backgroundColor = 'white';
+                    document.getElementById('story-container').style.transform = 'translateY(-100%)';
+                }, 800);
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        // Allow login on enter key press
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('login-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
+
