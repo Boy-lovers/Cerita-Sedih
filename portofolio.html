@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nachyn Host | Systems Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --glass-bg: rgba(10, 10, 12, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-blur: blur(30px) saturate(170%);
+            --accent-green: #10b981;
+            --accent-tg: #0088cc;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --neon-blue: #0ea5e9;
+            --neon-purple: #a855f7;
+            --neon-magenta: #ec4899;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #030303;
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* CANVAS BACKGROUND */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- STICKY DYNAMIC HEADER ENGINE --- */
+        header.dynamic-header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            padding: 45px 20px 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: transparent;
+        }
+
+        header.dynamic-header.scrolled {
+            padding: 14px 20px;
+            background: rgba(3, 3, 5, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            max-width: 100%;
+            left: 0;
+            transform: translateX(0);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .dynamic-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 58px;
+            font-weight: 400;
+            line-height: 1.0;
+            letter-spacing: -2px;
+            background: linear-gradient(to right, #ffffff, #d4d4d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dynamic-header.scrolled h1 {
+            font-size: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .dynamic-header h1 span {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            display: inline-block;
+            -webkit-text-fill-color: #27272a;
+            margin-left: -2px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dynamic-header.scrolled h1 span {
+            -webkit-text-fill-color: #f4f4f5;
+        }
+
+        .hero-brand {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dynamic-header.scrolled .hero-brand {
+            font-size: 10px;
+            letter-spacing: 1px;
+            padding: 2px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: var(--text-main);
+        }
+
+        /* MAIN WRAPPER WITH ANIMATION */
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 170px 20px 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* INTRO ANIMATION FOR CARDS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 3D TILT CARDS ARCHITECTURE */
+        .tilt-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 30px;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            transform-style: preserve-3d;
+            perspective: 1200px;
+            transition: border-color 0.4s, box-shadow 0.4s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .tilt-card:nth-child(1) { animation-delay: 0.1s; }
+        .tilt-card:nth-child(2) { animation-delay: 0.2s; }
+        .tilt-card:nth-child(3) { animation-delay: 0.3s; }
+        .tilt-card:nth-child(4) { animation-delay: 0.4s; }
+        .tilt-card:nth-child(6) { animation-delay: 0.5s; }
+
+        .tilt-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+            pointer-events: none;
+        }
+
+        .tilt-card:hover::before { left: 150%; }
+
+        .tilt-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(14, 165, 233, 0.03);
+        }
+
+        .inner-3d { transform: translateZ(35px); }
+
+        /* DATA LABELS & TYPOGRAPHY */
+        .section-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: #52525b;
+            margin-bottom: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        .paragraph {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            font-weight: 300;
+        }
+
+        /* CAPABILITIES CHIPS */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .tilt-card:hover .chip {
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ELITE TERMINAL MOCKUP STYLING */
+        .terminal-window {
+            background: rgba(5, 5, 8, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+        
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+        }
+        
+        .terminal-title {
+            color: #52525b;
+            font-size: 11px;
+        }
+        
+        .terminal-body {
+            color: #38bdf8;
+            line-height: 1.5;
+        }
+        
+        .terminal-output {
+            color: #4ade80;
+        }
+
+        /* TELEGRAM PREMIUM BUTTON */
+        .tg-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 18px;
+            background: rgba(0, 136, 204, 0.07);
+            border: 1px solid rgba(0, 136, 204, 0.2);
+            color: #fff;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateZ(20px);
+        }
+
+        .tg-action-btn:hover {
+            background: var(--accent-tg);
+            color: #fff;
+            box-shadow: 0 15px 35px rgba(0, 136, 204, 0.3);
+            border-color: transparent;
+            transform: translateZ(25px) scale(1.02);
+        }
+
+        /* WEBSITE PREMIUM BUTTON */
+        .web-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 18px;
+            background: rgba(14, 165, 233, 0.07);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            color: #fff;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateZ(20px);
+            margin-top: 18px;
+        }
+
+        .web-action-btn:hover {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            color: #fff;
+            box-shadow: 0 15px 35px rgba(14, 165, 233, 0.4);
+            border-color: transparent;
+            transform: translateZ(25px) scale(1.02);
+        }
+
+        /* MAC BROWSER MOCKUP WITH PULSE INDICATOR */
+        .mac-browser {
+            background: rgba(5, 5, 8, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            height: 140px;
+            padding: 14px;
+            position: relative;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.7);
+            transform: translateZ(40px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mac-header { position: absolute; top: 14px; left: 14px; display: flex; gap: 6px; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .d-r { background: #ff5f56; }
+        .d-y { background: #ffbd2e; }
+        .d-g { background: #27c93f; }
+
+        .browser-url {
+            position: absolute;
+            top: 10px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #52525b;
+            background: rgba(255,255,255,0.03);
+            padding: 3px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        /* LIVE STATUS PULSE */
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #34d399;
+            letter-spacing: 0.5px;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse-glow 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            font-size: 11px;
+            color: #27272a;
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <header class="dynamic-header" id="main-header">
+        <h1>Nachyn<span>Host</span></h1>
+        <div class="hero-brand">Systems</div>
+    </header>
+
+    <div class="app-wrapper">
+
+        <div class="tilt-card vanilla-tilt">
+            <div class="inner-3d">
+                <div class="section-label">⚡ Architect Profile</div>
+                <h2 class="section-title">Siapa Nachyn?</h2>
+                <p class="paragraph">
+                    Seorang System Architect yang fokus pada manipulasi sistem dan otomasi tingkat lanjut. Keahlian utama gue mencakup pengembangan Bot WhatsApp (Bug/MD) untuk efisiensi sistem, infrastruktur phishing untuk pengujian keamanan, hingga deployment malware/ransomware via lingkungan Linux/Termux. Selain itu, gue juga menguasai teknik injeksi media sosial, spamming OTP, serta pemetaan lokasi berbasis nomor telepon secara presisi. Gue bangun tools yang nggak cuma berfungsi, tapi punya kapabilitas buat nembus batasan sistem yang ada.
+                </p>
+            </div>
+        </div>
+
+        <div class="tilt-card vanilla-tilt">
+            <div class="inner-3d">
+                <div class="section-label">🛠️ Core Matrix</div>
+                <h2 class="section-title">Bisa Bantu Apa Aja?</h2>
+                <p class="paragraph">Memiliki pemahaman teknis mendalam untuk mengidentifikasi, menguji, dan memelihara berbagai instrumen eksekusi digital:</p>
+                <div class="chip-container">
+                    <span class="chip">Otomasi Sistem Bot</span>
+                    <span class="chip">Audit & Pelacakan Jaringan</span>
+                    <span class="chip">phising</span>
+                    <span class="chip">ramsomware</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tilt-card vanilla-tilt">
+            <div class="inner-3d">
+                <div class="section-label">💻 Environment Operations</div>
+                <h2 class="section-title">Termux Expertise</h2>
+                
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="mac-header" style="position:static;">
+                            <div class="dot d-r"></div>
+                            <div class="dot d-y"></div>
+                            <div class="dot d-g"></div>
+                        </div>
+                        <div class="terminal-title">bash - termux@android</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div><span style="color:#a855f7;">$</span>python lacak.py</div>
+                        <div class="terminal-output">[+] Checking number</div>
+                        <div class="terminal-output">[+] data tersimpan</div>
+                        <div><span style="color:#a855f7;">$</span> <span style="animation: pulse-glow 1s infinite; color:#fff;">|</span></div>
+                    </div>
+                </div>
+                
+                <p class="paragraph" style="font-size: 13px;">
+                    <strong>Implementasi Teknis:</strong><br>
+                    Penggunaan baris perintah terminal berbasis seluler untuk memonitor integritas jaringan, menjalankan eksekusi skrip otomatis secara *background*, dan mengelola konfigurasi server jarak jauh secara aman.
+                </p>
+            </div>
+        </div>
+
+        <div class="tilt-card vanilla-tilt">
+            <div class="inner-3d">
+                <div class="section-label">📡 Secure Link</div>
+                <h2 class="section-title">Mari Terhubung</h2>
+                <p class="paragraph" style="margin-bottom: 22px;">Punya ide project menarik atau butuh diskusi teknis mendalam seputar arsitektur eksekusi sistem? Langsung ketuk tautan di bawah.</p>
+                <a href="https://t.me/Xifa_mubaraq" class="tg-action-btn" target="_blank">
+                    💬 Chat via Telegram
+                </a>
+            </div>
+        </div>
+
+        <div class="app-label" style="font-size: 10px; text-transform: uppercase; letter-spacing: 2.5px; color: #52525b; margin-left: 10px; margin-bottom: -10px; font-weight: 700;">Showcase Sector</div>
+        
+        <div class="tilt-card vanilla-tilt">
+            <div class="inner-3d">
+                <div class="mac-browser">
+                    <div class="mac-header">
+                        <div class="dot d-r"></div>
+                        <div class="dot d-y"></div>
+                        <div class="dot d-g"></div>
+                    </div>
+                    <div class="browser-url">nachyntube</div>
+                    
+                    <div class="live-badge">
+                        <div class="pulse-dot"></div>
+                        <span>LIVE STATUS</span>
+                    </div>
+                </div>
+                
+                <h2 class="section-title" style="font-size: 21px; margin-bottom: 10px;">NachynTube Web Platform</h2>
+                <p class="paragraph">
+                    <strong>Konsep Website:</strong><br>
+                    NachynTube adalah platform pemutar video alternatif yang dirancang khusus untuk memberikan pengalaman menonton video secara bersih, efisien, ringan, dan bebas dari distorsi iklan yang mengganggu.
+                </p>
+                
+                <a href="https://nachyntube.vercel.app" class="web-action-btn" target="_blank">
+                    🚀 Launch NachynTube Website
+                </a>
+            </div>
+        </div>
+
+        <footer>NACHYN HOST SYSTEMS &copy; 2026</footer>
+
+    </div>
+
+    <script>
+        // --- 1. PURE SCROLL ENGINE DETECTION ---
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // --- 2. JAVASCRIPT 3D PARALLAX TILT ENGINE ---
+        class UltimateTiltPhysics {
+            constructor(cardElement) {
+                this.card = cardElement;
+                this.card.addEventListener('mousemove', this.onMove.bind(this));
+                this.card.addEventListener('mouseleave', this.onLeave.bind(this));
+                this.card.addEventListener('touchmove', this.onTouch.bind(this));
+                this.card.addEventListener('touchend', this.onLeave.bind(this));
+            }
+            process(clientX, clientY) {
+                const boundaries = this.card.getBoundingClientRect();
+                const mouseX = clientX - boundaries.left;
+                const mouseY = clientY - boundaries.top;
+                const midX = boundaries.width / 2;
+                const midY = boundaries.height / 2;
+                const rX = ((mouseY - midY) / midY) * -8; 
+                const rY = ((mouseX - midX) / midX) * 8;
+                this.card.style.transform = `perspective(1200px) rotateX(${rX}deg) rotateY(${rY}deg) scale3d(1.02, 1.02, 1.02)`;
+            }
+            onMove(e) { this.process(e.clientX, e.clientY); }
+            onTouch(e) { this.process(e.touches[0].clientX, e.touches[0].clientY); }
+            onLeave() {
+                this.card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                this.card.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+                setTimeout(() => { this.card.style.transition = ''; }, 500);
+            }
+        }
+        document.querySelectorAll('.vanilla-tilt').forEach(element => new UltimateTiltPhysics(element));
+
+        // --- 3. DENSE NEON VORTEX PARTICLES BACKGROUND ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, particleArray = [];
+        let mousePointer = { x: null, y: null, maxRadius: 110 };
+
+        const colors = ['rgba(14, 165, 233,', 'rgba(168, 85, 247,', 'rgba(236, 72, 153,', 'rgba(16, 185, 129,'];
+
+        function configureDimensions() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', () => { configureDimensions(); createEngine(); });
+        window.addEventListener('mousemove', (e) => { mousePointer.x = e.x; mousePointer.y = e.y; });
+        window.addEventListener('touchmove', (e) => { mousePointer.x = e.touches[0].clientX; mousePointer.y = e.touches[0].clientY; });
+        window.addEventListener('mouseout', () => { mousePointer.x = null; mousePointer.y = null; });
+        window.addEventListener('touchend', () => { mousePointer.x = null; mousePointer.y = null; });
+
+        class NodeParticle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.originX = this.x;
+                this.originY = this.y;
+                this.weight = (Math.random() * 12) + 1;
+                this.colorBase = colors[Math.floor(Math.random() * colors.length)];
+                this.life = Math.random() * 300 + 100;
+            }
+            render() {
+                let alpha = (this.life / 400) * 0.12;
+                if (mousePointer.x != null) {
+                    let d = Math.sqrt((mousePointer.x - this.x)**2 + (mousePointer.y - this.y)**2);
+                    if (d < mousePointer.maxRadius) alpha = 0.22;
+                }
+                ctx.fillStyle = `${this.colorBase}${alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            motion() {
+                if (mousePointer.x != null) {
+                    let distanceX = mousePointer.x - this.x;
+                    let distanceY = mousePointer.y - this.y;
+                    let totalDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+                    
+                    if (totalDistance < mousePointer.maxRadius) {
+                        let pushForce = (mousePointer.maxRadius - totalDistance) / mousePointer.maxRadius;
+                        this.x -= (distanceX / totalDistance) * pushForce * this.weight * 0.4;
+                        this.y -= (distanceY / totalDistance) * pushForce * this.weight * 0.4;
+                    } else {
+                        if (this.x !== this.originX) this.x -= (this.x - this.originX) / 10;
+                        if (this.y !== this.originY) this.y -= (this.y - this.originY) / 10;
+                    }
+                } else {
+                    if (this.x !== this.originX) this.x -= (this.x - this.originX) / 15;
+                    if (this.y !== this.originY) this.y -= (this.y - this.originY) / 15;
+                }
+                this.originX += (Math.random() - 0.5) * 0.2;
+                this.originY += (Math.random() - 0.5) * 0.2;
+            }
+        }
+
+        function createEngine() {
+            particleArray = [];
+            let totalNodes = (w * h) / 7500;
+            for (let i = 0; i < totalNodes; i++) particleArray.push(new NodeParticle());
+        }
+
+        function drawLines() {
+            for (let i = 0; i < particleArray.length; i++) {
+                for (let j = i; j < particleArray.length; j++) {
+                    let d = ((particleArray[i].x - particleArray[j].x) * (particleArray[i].x - particleArray[j].x)) 
+                            + ((particleArray[i].y - particleArray[j].y) * (particleArray[i].y - particleArray[j].y));
+                    if (d < (w / 7.5) * (h / 7.5)) {
+                        let alpha = 1 - (d / 15000);
+                        ctx.strokeStyle = `${particleArray[i].colorBase}${alpha * 0.08})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(particleArray[i].x, particleArray[i].y);
+                        ctx.lineTo(particleArray[j].x, particleArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            ctx.fillStyle = 'rgba(3, 3, 5, 0.2)'; 
+            ctx.fillRect(0, 0, w, h);
+            for (let i = 0; i < particleArray.length; i++) {
+                particleArray[i].motion();
+                particleArray[i].render();
+            }
+            drawLines();
+        }
+
+        configureDimensions();
+        createEngine();
+        renderLoop();
+    </script>
+</body>
+</html>
